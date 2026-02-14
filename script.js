@@ -77,13 +77,17 @@ const TOTAL_FOTOS = 30;
 
 for (let i = 1; i <= TOTAL_FOTOS; i++) {
   const texture = loader.load(`fotos/foto${i}.jpg`);
+texture.minFilter = THREE.LinearFilter;
+texture.magFilter = THREE.LinearFilter;
+texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+
 
   const mat = new THREE.MeshBasicMaterial({
     map: texture,
     side: THREE.DoubleSide
   });
 
-  const geo = new THREE.PlaneGeometry(2.2, 1.5);
+  const geo = new THREE.PlaneGeometry(3, 2);
   const photo = new THREE.Mesh(geo, mat);
 
   const angle = (i / TOTAL_FOTOS) * Math.PI * 2;
@@ -147,4 +151,5 @@ window.addEventListener("resize", () => {
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
+
 
