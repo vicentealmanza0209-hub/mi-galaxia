@@ -1,7 +1,7 @@
-// ================== ESCENA ==================
+// ================= ESCENA =================
 const scene = new THREE.Scene();
 
-// ================== CÁMARA ==================
+// ================= CÁMARA =================
 const camera = new THREE.PerspectiveCamera(
   70,
   window.innerWidth / window.innerHeight,
@@ -10,13 +10,13 @@ const camera = new THREE.PerspectiveCamera(
 );
 camera.position.z = 25;
 
-// ================== RENDER ==================
+// ================= RENDER =================
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(window.devicePixelRatio);
 document.body.appendChild(renderer.domElement);
 
-// ================== GALAXIA ==================
+// ================= GALAXIA =================
 const starCount = 9000;
 const geometry = new THREE.BufferGeometry();
 const positions = [];
@@ -41,14 +41,8 @@ for (let i = 0; i < starCount; i++) {
   colors.push(color.r, color.g, color.b);
 }
 
-geometry.setAttribute(
-  'position',
-  new THREE.Float32BufferAttribute(positions, 3)
-);
-geometry.setAttribute(
-  'color',
-  new THREE.Float32BufferAttribute(colors, 3)
-);
+geometry.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
+geometry.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
 
 const material = new THREE.PointsMaterial({
   size: 0.07,
@@ -60,22 +54,39 @@ const material = new THREE.PointsMaterial({
 const galaxy = new THREE.Points(geometry, material);
 scene.add(galaxy);
 
-// ================== FOTOS ==================
+// ================= FOTOS =================
 const loader = new THREE.TextureLoader();
 const photoGroup = new THREE.Group();
 const photos = [];
 
-for (let i = 1; i <= 30; i++) {
+const mensajes = [
+  "Nuestro primer recuerdo 💜",
+  "Siempre tú ✨",
+  "Ese día fui feliz contigo",
+  "Mi lugar favorito es a tu lado",
+  "Te elegiría mil veces",
+  "Nuestra historia 💫",
+  "Amarte es fácil",
+  "Momentos eternos",
+  "Mi persona favorita",
+  "Siempre nosotros"
+];
+
+// AJUSTA AQUÍ SI TIENES MÁS O MENOS FOTOS
+const TOTAL_FOTOS = 30;
+
+for (let i = 1; i <= TOTAL_FOTOS; i++) {
   const texture = loader.load(`fotos/foto${i}.jpg`);
-  const material = new THREE.MeshBasicMaterial({
+
+  const mat = new THREE.MeshBasicMaterial({
     map: texture,
     side: THREE.DoubleSide
   });
 
-  const geometry = new THREE.PlaneGeometry(2.2, 1.5);
-  const photo = new THREE.Mesh(geometry, material);
+  const geo = new THREE.PlaneGeometry(2.2, 1.5);
+  const photo = new THREE.Mesh(geo, mat);
 
-  const angle = (i / 30) * Math.PI * 2;
+  const angle = (i / TOTAL_FOTOS) * Math.PI * 2;
   const radius = 10 + Math.random() * 4;
 
   photo.position.set(
@@ -84,13 +95,38 @@ for (let i = 1; i <= 30; i++) {
     Math.sin(angle) * radius
   );
 
+  photo.userData.message = mensajes[i % mensajes.length];
+
   photoGroup.add(photo);
   photos.push(photo);
 }
 
 scene.add(photoGroup);
 
-// ================== ANIMACIÓN ==================
+// ================= ZOOM + MENSAJE =================
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+
+window.addEventListener("click", (event) => {
+  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+  raycaster.setFromCamera(mouse, camera);
+  const intersects = raycaster.intersectObjects(photos);
+
+  if (intersects.length > 0) {
+    const photo = intersects[0].object;
+    alert(photo.userData.message);
+
+    const target = photo.position.clone();
+    camera.position.lerp(
+      target.add(new THREE.Vector3(0, 0, 3)),
+      0.25
+    );
+  }
+});
+
+// ================= ANIMACIÓN =================
 function animate() {
   requestAnimationFrame(animate);
 
@@ -105,8 +141,8 @@ function animate() {
 }
 animate();
 
-// ================== RESPONSIVE ==================
-window.addEventListener('resize', () => {
+// ================= RESPONSIVE =================
+window.addEventListener("resize", () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
