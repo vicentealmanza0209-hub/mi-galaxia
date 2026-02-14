@@ -60,16 +60,16 @@ const photoGroup = new THREE.Group();
 const photos = [];
 
 const mensajes = [
-  "Nuestro primer recuerdo 💜",
+  "Hermosaaaa 💜",
   "Siempre tú ✨",
-  "Ese día fui feliz contigo",
+  "Preciosaa",
   "Mi lugar favorito es a tu lado",
   "Te elegiría mil veces",
-  "Nuestra historia 💫",
-  "Amarte es fácil",
+  "Nuestra historia",
+  "Te amo",
   "Momentos eternos",
   "Mi persona favorita",
-  "Siempre nosotros"
+  "Me encantas"
 ];
 
 // AJUSTA AQUÍ SI TIENES MÁS O MENOS FOTOS
@@ -147,3 +147,4 @@ window.addEventListener("resize", () => {
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
+
