@@ -1,0 +1,113 @@
+// ================== ESCENA ==================
+const scene = new THREE.Scene();
+
+// ================== CÁMARA ==================
+const camera = new THREE.PerspectiveCamera(
+  70,
+  window.innerWidth / window.innerHeight,
+  0.1,
+  1000
+);
+camera.position.z = 25;
+
+// ================== RENDER ==================
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(window.devicePixelRatio);
+document.body.appendChild(renderer.domElement);
+
+// ================== GALAXIA ==================
+const starCount = 9000;
+const geometry = new THREE.BufferGeometry();
+const positions = [];
+const colors = [];
+
+const innerColor = new THREE.Color(0xffc6a8);
+const outerColor = new THREE.Color(0x6b77ff);
+
+for (let i = 0; i < starCount; i++) {
+  const radius = Math.random() * 15;
+  const spin = radius * 1.3;
+  const branch = (i % 4) / 4 * Math.PI * 2;
+
+  const x = Math.cos(branch + spin) * radius;
+  const y = (Math.random() - 0.5) * 2;
+  const z = Math.sin(branch + spin) * radius;
+
+  positions.push(x, y, z);
+
+  const color = innerColor.clone();
+  color.lerp(outerColor, radius / 15);
+  colors.push(color.r, color.g, color.b);
+}
+
+geometry.setAttribute(
+  'position',
+  new THREE.Float32BufferAttribute(positions, 3)
+);
+geometry.setAttribute(
+  'color',
+  new THREE.Float32BufferAttribute(colors, 3)
+);
+
+const material = new THREE.PointsMaterial({
+  size: 0.07,
+  vertexColors: true,
+  transparent: true,
+  blending: THREE.AdditiveBlending
+});
+
+const galaxy = new THREE.Points(geometry, material);
+scene.add(galaxy);
+
+// ================== FOTOS ==================
+const loader = new THREE.TextureLoader();
+const photoGroup = new THREE.Group();
+const photos = [];
+
+for (let i = 1; i <= 30; i++) {
+  const texture = loader.load(`fotos/foto${i}.jpg`);
+  const material = new THREE.MeshBasicMaterial({
+    map: texture,
+    side: THREE.DoubleSide
+  });
+
+  const geometry = new THREE.PlaneGeometry(2.2, 1.5);
+  const photo = new THREE.Mesh(geometry, material);
+
+  const angle = (i / 30) * Math.PI * 2;
+  const radius = 10 + Math.random() * 4;
+
+  photo.position.set(
+    Math.cos(angle) * radius,
+    (Math.random() - 0.5) * 5,
+    Math.sin(angle) * radius
+  );
+
+  photoGroup.add(photo);
+  photos.push(photo);
+}
+
+scene.add(photoGroup);
+
+// ================== ANIMACIÓN ==================
+function animate() {
+  requestAnimationFrame(animate);
+
+  galaxy.rotation.y += 0.0004;
+  photoGroup.rotation.y -= 0.0006;
+
+  photos.forEach(photo => {
+    photo.lookAt(camera.position);
+  });
+
+  renderer.render(scene, camera);
+}
+animate();
+
+// ================== RESPONSIVE ==================
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
