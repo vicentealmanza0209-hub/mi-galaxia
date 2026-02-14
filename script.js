@@ -56,7 +56,7 @@ scene.add(galaxy);
 // ================= AGUJERO NEGRO =================
 
 // Núcleo oscuro
-const blackHoleGeo = new THREE.SphereGeometry(1.2, 32, 32);
+const blackHoleGeo = new THREE.SphereGeometry(1.6, 32, 32);
 const blackHoleMat = new THREE.MeshBasicMaterial({
   color: 0x000000
 });
@@ -64,12 +64,12 @@ const blackHole = new THREE.Mesh(blackHoleGeo, blackHoleMat);
 scene.add(blackHole);
 
 // Disco de acreción (halo brillante)
-const diskGeo = new THREE.RingGeometry(1.6, 3.2, 64);
+const diskGeo = new THREE.RingGeometry(2, 4, 64);
 const diskMat = new THREE.MeshBasicMaterial({
   color: 0xffaa55,
   side: THREE.DoubleSide,
   transparent: true,
-  opacity: 0.8,
+  opacity: 1,
   blending: THREE.AdditiveBlending
 });
 const accretionDisk = new THREE.Mesh(diskGeo, diskMat);
@@ -176,6 +176,7 @@ window.addEventListener("resize", () => {
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
+
 
 
 
