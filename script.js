@@ -53,6 +53,29 @@ const material = new THREE.PointsMaterial({
 
 const galaxy = new THREE.Points(geometry, material);
 scene.add(galaxy);
+// ================= AGUJERO NEGRO =================
+
+// Núcleo oscuro
+const blackHoleGeo = new THREE.SphereGeometry(1.2, 32, 32);
+const blackHoleMat = new THREE.MeshBasicMaterial({
+  color: 0x000000
+});
+const blackHole = new THREE.Mesh(blackHoleGeo, blackHoleMat);
+scene.add(blackHole);
+
+// Disco de acreción (halo brillante)
+const diskGeo = new THREE.RingGeometry(1.6, 3.2, 64);
+const diskMat = new THREE.MeshBasicMaterial({
+  color: 0xffaa55,
+  side: THREE.DoubleSide,
+  transparent: true,
+  opacity: 0.8,
+  blending: THREE.AdditiveBlending
+});
+const accretionDisk = new THREE.Mesh(diskGeo, diskMat);
+accretionDisk.rotation.x = Math.PI / 2;
+scene.add(accretionDisk);
+
 
 // ================= FOTOS =================
 const loader = new THREE.TextureLoader();
@@ -137,6 +160,8 @@ function animate() {
   galaxy.rotation.y += 0.0004;
   photoGroup.rotation.y -= 0.0006;
 
+  accretionDisk.rotation.z += 0.002; // ✨ giro del disco
+  
   photos.forEach(photo => {
     photo.lookAt(camera.position);
   });
@@ -151,5 +176,6 @@ window.addEventListener("resize", () => {
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
+
 
 
